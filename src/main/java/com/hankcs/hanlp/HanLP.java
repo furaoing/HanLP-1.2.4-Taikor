@@ -47,7 +47,7 @@ public class HanLP
      * 库的全局配置，既可以用代码修改，也可以通过hanlp.properties配置（按照 变量名=值 的形式）
      */
     public static final class Config
-    {
+    {    	
         /**
          * 开发模式
          */
@@ -167,6 +167,7 @@ public class HanLP
 
         static
         {
+        	/*
             // 自动读取配置
             Properties p = new Properties();
             try
@@ -242,8 +243,64 @@ public class HanLP
                 sbInfo.append("现在HanLP将尝试从").append(System.getProperties().get("user.dir")).append("读取data……");
                 logger.severe("没有找到HanLP.properties，可能会导致找不到data\n" + sbInfo);
             }
+            */
         }
 
+        public static void initRootPath(String RootPath)
+        {         
+    		try
+            {            	
+                if (!RootPath.endsWith("/")) RootPath += "/";
+                CoreDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.txt";
+                CoreDictionaryTransformMatrixDictionaryPath = RootPath + CoreDictionaryTransformMatrixDictionaryPath;
+                BiGramDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.ngram.txt";
+                CoreStopWordDictionaryPath = RootPath + "data/dictionary/stopwords.txt";
+                CoreSynonymDictionaryDictionaryPath = RootPath + "data/dictionary/synonym/CoreSynonym.txt";
+                PersonDictionaryPath = RootPath + "data/dictionary/person/nr.txt";
+                PersonDictionaryTrPath = RootPath + "data/dictionary/person/nr.tr.txt";
+                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
+                String prePath = RootPath;
+                for (int i = 0; i < pathArray.length; ++i)
+                {
+                    if (pathArray[i].startsWith(" "))
+                    {
+                        pathArray[i] = prePath + pathArray[i].trim();
+                    }
+                    else
+                    {
+                        pathArray[i] = RootPath + pathArray[i];
+                        int lastSplash = pathArray[i].lastIndexOf('/');
+                        if (lastSplash != -1)
+                        {
+                            prePath = pathArray[i].substring(0, lastSplash + 1);
+                        }
+                    }
+                }
+                CustomDictionaryPath = pathArray;
+                TraditionalChineseDictionaryPath = RootPath + "data/dictionary/tc/TraditionalChinese.txt";
+                SYTDictionaryPath = RootPath + SYTDictionaryPath;
+                PinyinDictionaryPath = RootPath + PinyinDictionaryPath;
+                TranslatedPersonDictionaryPath = RootPath + TranslatedPersonDictionaryPath;
+                JapanesePersonDictionaryPath = RootPath + JapanesePersonDictionaryPath;
+                PlaceDictionaryPath = RootPath + PlaceDictionaryPath;
+                PlaceDictionaryTrPath = RootPath + PlaceDictionaryTrPath;
+                OrganizationDictionaryPath = RootPath + OrganizationDictionaryPath;
+                OrganizationDictionaryTrPath = RootPath + OrganizationDictionaryTrPath;
+                CharTypePath = RootPath + CharTypePath;
+                CharTablePath = RootPath + CharTablePath;
+                WordNatureModelPath = RootPath + WordNatureModelPath;
+                MaxEntModelPath = RootPath + MaxEntModelPath;
+                CRFSegmentModelPath = RootPath + "data/model/segment/CRFSegmentModel.txt";
+                CRFDependencyModelPath = RootPath + CRFDependencyModelPath;
+                HMMSegmentModelPath = RootPath + "data/model/segment/HMMSegmentModel.bin";
+                ShowTermNature = true;
+                Normalization = "true".equals("false");
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        
         /**
          * 开启调试模式(会降低性能)
          */
@@ -270,6 +327,16 @@ public class HanLP
         }
     }
 
+	/**
+	 * 根路径
+	 * if windows, the data path is D:/Taikor/Data/HanLPData/
+	 * if linux, the data path is /taikor/data/HanLPData/
+	 */
+	public static void Init(String rootPath)
+    {
+		HanLP.Config.initRootPath(rootPath);
+    }
+	
     /**
      * 工具类，不需要生成实例
      */
