@@ -246,59 +246,66 @@ public class HanLP
             */
         }
 
+        private static boolean HadInitRootPath = false;
+        
         public static void initRootPath(String RootPath)
         {         
     		try
-            {            	
-                if (!RootPath.endsWith("/")) RootPath += "/";
-                CoreDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.txt";
-                CoreDictionaryTransformMatrixDictionaryPath = RootPath + CoreDictionaryTransformMatrixDictionaryPath;
-                BiGramDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.ngram.txt";
-                CoreStopWordDictionaryPath = RootPath + "data/dictionary/stopwords.txt";
-                CoreSynonymDictionaryDictionaryPath = RootPath + "data/dictionary/synonym/CoreSynonym.txt";
-                PersonDictionaryPath = RootPath + "data/dictionary/person/nr.txt";
-                PersonDictionaryTrPath = RootPath + "data/dictionary/person/nr.tr.txt";
-                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
-                String prePath = RootPath;
-                for (int i = 0; i < pathArray.length; ++i)
-                {
-                    if (pathArray[i].startsWith(" "))
-                    {
-                        pathArray[i] = prePath + pathArray[i].trim();
-                    }
-                    else
-                    {
-                        pathArray[i] = RootPath + pathArray[i];
-                        int lastSplash = pathArray[i].lastIndexOf('/');
-                        if (lastSplash != -1)
-                        {
-                            prePath = pathArray[i].substring(0, lastSplash + 1);
-                        }
-                    }
-                }
-                CustomDictionaryPath = pathArray;
-                TraditionalChineseDictionaryPath = RootPath + "data/dictionary/tc/TraditionalChinese.txt";
-                SYTDictionaryPath = RootPath + SYTDictionaryPath;
-                PinyinDictionaryPath = RootPath + PinyinDictionaryPath;
-                TranslatedPersonDictionaryPath = RootPath + TranslatedPersonDictionaryPath;
-                JapanesePersonDictionaryPath = RootPath + JapanesePersonDictionaryPath;
-                PlaceDictionaryPath = RootPath + PlaceDictionaryPath;
-                PlaceDictionaryTrPath = RootPath + PlaceDictionaryTrPath;
-                OrganizationDictionaryPath = RootPath + OrganizationDictionaryPath;
-                OrganizationDictionaryTrPath = RootPath + OrganizationDictionaryTrPath;
-                CharTypePath = RootPath + CharTypePath;
-                CharTablePath = RootPath + CharTablePath;
-                WordNatureModelPath = RootPath + WordNatureModelPath;
-                MaxEntModelPath = RootPath + MaxEntModelPath;
-                CRFSegmentModelPath = RootPath + "data/model/segment/CRFSegmentModel.txt";
-                CRFDependencyModelPath = RootPath + CRFDependencyModelPath;
-                HMMSegmentModelPath = RootPath + "data/model/segment/HMMSegmentModel.bin";
-                ShowTermNature = true;
-                Normalization = "true".equals("false");
+            {
+    			if(!HadInitRootPath)
+    			{
+    				HadInitRootPath = true;
+    				if (!RootPath.endsWith("/")) RootPath += "/";
+	                CoreDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.txt";
+	                CoreDictionaryTransformMatrixDictionaryPath = RootPath + CoreDictionaryTransformMatrixDictionaryPath;
+	                BiGramDictionaryPath = RootPath + "data/dictionary/CoreNatureDictionary.ngram.txt";
+	                CoreStopWordDictionaryPath = RootPath + "data/dictionary/stopwords.txt";
+	                CoreSynonymDictionaryDictionaryPath = RootPath + "data/dictionary/synonym/CoreSynonym.txt";
+	                PersonDictionaryPath = RootPath + "data/dictionary/person/nr.txt";
+	                PersonDictionaryTrPath = RootPath + "data/dictionary/person/nr.tr.txt";
+	                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
+	                String prePath = RootPath;
+	                for (int i = 0; i < pathArray.length; ++i)
+	                {
+	                    if (pathArray[i].startsWith(" "))
+	                    {
+	                        pathArray[i] = prePath + pathArray[i].trim();
+	                    }
+	                    else
+	                    {
+	                        pathArray[i] = RootPath + pathArray[i];
+	                        int lastSplash = pathArray[i].lastIndexOf('/');
+	                        if (lastSplash != -1)
+	                        {
+	                            prePath = pathArray[i].substring(0, lastSplash + 1);
+	                        }
+	                    }
+	                }
+	                CustomDictionaryPath = pathArray;
+	                TraditionalChineseDictionaryPath = RootPath + "data/dictionary/tc/TraditionalChinese.txt";
+	                SYTDictionaryPath = RootPath + SYTDictionaryPath;
+	                PinyinDictionaryPath = RootPath + PinyinDictionaryPath;
+	                TranslatedPersonDictionaryPath = RootPath + TranslatedPersonDictionaryPath;
+	                JapanesePersonDictionaryPath = RootPath + JapanesePersonDictionaryPath;
+	                PlaceDictionaryPath = RootPath + PlaceDictionaryPath;
+	                PlaceDictionaryTrPath = RootPath + PlaceDictionaryTrPath;
+	                OrganizationDictionaryPath = RootPath + OrganizationDictionaryPath;
+	                OrganizationDictionaryTrPath = RootPath + OrganizationDictionaryTrPath;
+	                CharTypePath = RootPath + CharTypePath;
+	                CharTablePath = RootPath + CharTablePath;
+	                WordNatureModelPath = RootPath + WordNatureModelPath;
+	                MaxEntModelPath = RootPath + MaxEntModelPath;
+	                CRFSegmentModelPath = RootPath + "data/model/segment/CRFSegmentModel.txt";
+	                CRFDependencyModelPath = RootPath + CRFDependencyModelPath;
+	                HMMSegmentModelPath = RootPath + "data/model/segment/HMMSegmentModel.bin";
+	                ShowTermNature = true;
+	                Normalization = "true".equals("false");
+    			}
             }
             catch (Exception e)
             {
             }
+            
         }
         
         /**
