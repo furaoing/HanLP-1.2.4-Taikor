@@ -263,7 +263,7 @@ public class HanLP
 	                CoreSynonymDictionaryDictionaryPath = RootPath + "data/dictionary/synonym/CoreSynonym.txt";
 	                PersonDictionaryPath = RootPath + "data/dictionary/person/nr.txt";
 	                PersonDictionaryTrPath = RootPath + "data/dictionary/person/nr.tr.txt";
-	                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
+	                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; Taikor_CustomDict.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
 	                String prePath = RootPath;
 	                for (int i = 0; i < pathArray.length; ++i)
 	                {
