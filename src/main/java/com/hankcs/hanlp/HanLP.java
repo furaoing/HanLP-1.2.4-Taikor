@@ -263,7 +263,7 @@ public class HanLP
 	                CoreSynonymDictionaryDictionaryPath = RootPath + "data/dictionary/synonym/CoreSynonym.txt";
 	                PersonDictionaryPath = RootPath + "data/dictionary/person/nr.txt";
 	                PersonDictionaryTrPath = RootPath + "data/dictionary/person/nr.tr.txt";
-	                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; 现代汉语补充词库.txt; Taikor_CustomDict.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
+	                String[] pathArray = "data/dictionary/custom/CustomDictionary.txt; Taikor_CustomDict.txt; 现代汉语补充词库.txt; 全国地名大全.txt ns; 人名词典.txt; 机构名词典.txt; 上海地名.txt ns;data/dictionary/person/nrf.txt nrf".split(";");
 	                String prePath = RootPath;
 	                for (int i = 0; i < pathArray.length; ++i)
 	                {
@@ -512,6 +512,23 @@ public class HanLP
         // The actual length of the summary generated may be short than the required length, but never longer;
         return TextRankSentence.getSummary(document, max_length);
     }
+
+    /**
+     * 自动摘要
+     * @param termList 分词结果
+     * @param max_length 需要摘要的长度
+         * @param document 文章原文
+     * @return 摘要文本
+     */
+    public static String taikorGetSummary(String document, List<Term> termList, int max_length)
+    {
+        // Parameter size in this method refers to the string length of the summary required;
+        // The actual length of the summary generated may be short than the required length, but never longer;
+        // Use segmented tokens as input
+        return TextRankSentence.taikorGetSummary(document, termList, max_length);
+    }
+}
+
 
     /**
      * 自动摘要
