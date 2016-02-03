@@ -193,6 +193,39 @@ public class TextRankSentence
         return sentences;
     }
 
+     /**
+     * 将分词结果转换为为List<List<String>>
+     * @param termList 分词结果
+     * @return 文章的词语表示docs
+     */
+    static List<List<String>> termSpiltSentence(List<Term> termList)
+    {
+        List<List<String>> docs = new ArrayList<List<String>>();
+        List<String> sentences = new ArrayList<String>();
+        for (Term term : termList)
+        {
+                if (!term.word.equals("。"))
+                {
+                    if ((!term.word.equals(" "))&&
+                            (!term.word.equals("\r")) &&
+                            (!term.word.equals("\n"))&&
+                            term.word.length()>0)
+                    {
+                        if (CoreStopWordDictionary.shouldInclude(term))
+                        {
+                            sentences.add(term.word);
+                        }
+                    }
+                }
+            else {
+                    docs.add(sentences);
+                    sentences = new ArrayList<String>();
+                }
+        }
+
+        return docs;
+    }
+
     /**
      * 一句话调用接口
      * @param document 目标文档
@@ -227,6 +260,43 @@ public class TextRankSentence
         return resultList;
     }
 
+
+        /**
+     * 一句话调用接口
+     * @param termList 分词结果
+     * @param max_length 需要摘要的长度
+         * @param document 文章原文
+     * @return 摘要文本
+     */
+    public static String taikorGetSummary(String document, List<Term> termList, int max_length)
+    {
+        List<String> sentenceList = spiltSentence(document);
+        List<List<String>> docs = termSpiltSentence(termList);
+        int document_length = document.length();
+        int sentence_count = sentenceList.size();
+        int sentence_length_avg = document_length/sentence_count;
+        int size = max_length/sentence_length_avg + 1;
+
+        TextRankSentence textRank = new TextRankSentence(docs);
+        int[] topSentence = textRank.getTopSentence(size);
+        List<String> resultList = new LinkedList<String>();
+        for (int i : topSentence)
+        {
+            resultList.add(sentenceList.get(i));
+        }
+
+        resultList = permutation(resultList, sentenceList);
+        resultList = pick_sentences(resultList, max_length);
+        //String summary = String.join("", resultList); // incompatible with .net in Storm clusters
+        String summary = "";
+        for(String temp : resultList)
+        {
+        	summary += temp;
+        }
+        return summary;
+    }
+
+
     /**
      * 一句话调用接口
      * @param document 目标文档
@@ -235,12 +305,7 @@ public class TextRankSentence
      */
     public static String getSummary(String document, int max_length)
     {
-        document = mark_html_tag(document);
         List<String> sentenceList = spiltSentence(document);
-        List<String> unstripped_list = deep_copy(sentenceList);
-        List[] strip_result = strip_html_tag(sentenceList);
-        List html_tags = strip_result[0];
-        sentenceList = strip_result[1];
 
         int sentence_count = sentenceList.size();
         int document_length = document.length();
@@ -272,14 +337,30 @@ public class TextRankSentence
 
         resultList = permutation(resultList, sentenceList);
         resultList = pick_sentences(resultList, max_length);
-        resultList = restore_html_tagging(resultList, unstripped_list, html_tags);
-        //String summary = String.join("", resultList); // incompatible with .net in Storm clusters
+        /*
+        String summary = String.join("", resultList);
+        incompatible with .net in Storm clusters
+        */
         String summary = "";
         for(String temp : resultList)
         {
-        	summary += temp;
+        	summary += patch_quote(temp);
         }
         return summary;
+    }
+
+    public static String patch_quote(String sentence)
+    {
+        if((sentence.charAt(0)=='“')&&(sentence.charAt(sentence.length()-1)!='”'))
+        {
+            sentence += "”";
+        }
+        else if((sentence.charAt(0)=='"')&&(sentence.charAt(sentence.length()-1)!='"'))
+        {
+            sentence += "\"";
+        }
+
+        return sentence;
     }
 
     public static List<String> permutation(List<String> resultList, List<String> sentenceList)
@@ -332,82 +413,5 @@ public class TextRankSentence
             }
         }
         return resultBuffer;
-    }
-
-    public static String mark_html_tag(String document)
-    {
-        String original = ">";
-        String replaced = ">。";
-        String new_doc = document.replace(original, replaced);
-        return new_doc;
-    }
-
-    public static List[] strip_html_tag(List<String> sentenceList)
-    {
-        String pattern = "<.+?>";
-        Pattern r = Pattern.compile(pattern);
-        List html_tags = new ArrayList();
-        String html_tag_buffer;
-        for(int i = 0; i < sentenceList.size(); i++)
-        {
-            Matcher m = r.matcher(sentenceList.get(i));
-            if(m.find())
-            {
-                html_tag_buffer = sentenceList.remove(i);
-                html_tags.add(html_tag_buffer);
-                i--;
-            }
-        }
-
-        List[] result_lists = new List[2];
-        result_lists[0] = html_tags;
-        result_lists[1] = sentenceList;
-        return result_lists;
-    }
-
-    public static List<String> restore_html_tagging(List<String> resultList, List<String> sentenceList, List<String> htmlTag)
-    {
-        int tagging_count = htmlTag.size();
-        String tagging;
-        String buffer;
-        int tagging_index;
-        int sentence_index;
-        for(int i = 0; i < tagging_count; i++) {
-            boolean unfinished_marking = true;
-            tagging = htmlTag.get(i);
-            tagging_index = sentenceList.indexOf(tagging);
-            for (int j = 0; j < resultList.size(); j++)
-            {
-                buffer = resultList.get(j);
-                sentence_index = sentenceList.indexOf(buffer);
-                if(sentence_index > tagging_index)
-                {
-                    tagging = tagging.replace("。", "");
-                    tagging = "<br>" + tagging;  // create a new line after each picture
-                    resultList.add(j, tagging);
-                    unfinished_marking = false;
-                    break;
-                }
-            }
-            if(unfinished_marking)
-            {
-                tagging = tagging.replace("。", "");
-                tagging = "<br>" + tagging;   // create a new line after each picture
-                resultList.add(tagging);
-            }
-        }
-        return resultList;
-    }
-
-
-
-    public static List<String> deep_copy(List<String> list_src)
-    {
-        List<String> list_dst =new ArrayList<String>();
-        for(String mystr : list_src)
-        {
-            list_dst.add(mystr);
-        }
-        return list_dst;
     }
 }
