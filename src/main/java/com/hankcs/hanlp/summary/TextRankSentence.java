@@ -12,6 +12,7 @@
 package com.hankcs.hanlp.summary;
 
 
+import com.hankcs.hanlp.corpus.tag.Nature;
 import com.hankcs.hanlp.dictionary.stopword.CoreStopWordDictionary;
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.StandardTokenizer;
@@ -291,7 +292,43 @@ public class TextRankSentence
         String summary = "";
         for(String temp : resultList)
         {
-        	summary += temp;
+        	summary += patch_quote(temp);
+        }
+        return summary;
+    }
+
+            /**
+     * 一句话调用接口
+     * @param termString 分词结果字符串
+     * @param max_length 需要摘要的长度
+         * @param document 文章原文
+     * @return 摘要文本
+     */
+    public static String taikorGetSummary(String document, String termString, int max_length)
+    {
+        List<Term> termList = string2term(termString);
+        List<String> sentenceList = spiltSentence(document);
+        List<List<String>> docs = termSpiltSentence(termList);
+        int document_length = document.length();
+        int sentence_count = sentenceList.size();
+        int sentence_length_avg = document_length/sentence_count;
+        int size = max_length/sentence_length_avg + 1;
+
+        TextRankSentence textRank = new TextRankSentence(docs);
+        int[] topSentence = textRank.getTopSentence(size);
+        List<String> resultList = new LinkedList<String>();
+        for (int i : topSentence)
+        {
+            resultList.add(sentenceList.get(i));
+        }
+
+        resultList = permutation(resultList, sentenceList);
+        resultList = pick_sentences(resultList, max_length);
+        //String summary = String.join("", resultList); // incompatible with .net in Storm clusters
+        String summary = "";
+        for(String temp : resultList)
+        {
+            summary += patch_quote(temp);
         }
         return summary;
     }
@@ -413,5 +450,39 @@ public class TextRankSentence
             }
         }
         return resultBuffer;
+    }
+
+    public static List<Term> string2term(String seg_str){
+        if (seg_str.charAt(0)=='[') {
+            seg_str = seg_str.substring(1, seg_str.length() - 1);
+        }
+        String[] items = seg_str.split("[ ]");
+        List<Term> termList = new ArrayList<Term>();
+
+        for (int i=0; i< items.length; i++)
+        {
+            String item = items[i];
+            if (item.length()==0){
+                continue;
+            }
+            if (item.charAt(0)=='/'){
+                continue;
+            }
+            String[] temp = item.split("/");
+            String word = temp[0];
+            String nature_str = temp[1];
+            if (nature_str.charAt(nature_str.length()-1)==','){
+                nature_str = nature_str.substring(0, nature_str.length()-1);
+            }
+            try {
+                Nature nature = Nature.valueOf(nature_str);
+                Term term = new Term(word, nature);
+                termList.add(term);
+            }
+            catch (Exception e){
+                System.out.println("Nature Value Illegal (Not Listed in Nature.java)");
+            }
+        }
+        return termList;
     }
 }
