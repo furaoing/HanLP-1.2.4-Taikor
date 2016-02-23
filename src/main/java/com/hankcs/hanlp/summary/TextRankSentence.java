@@ -18,7 +18,6 @@ import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.StandardTokenizer;
 
 import java.util.*;
-import java.util.regex.*;
 
 /**
  * TextRank 自动摘要
@@ -173,7 +172,7 @@ public class TextRankSentence
         {
             line = line.trim();
             if (line.length() == 0) continue;
-            for (String sent : line.split("[。]"))
+            for (String sent : line.split("[。!！？?]"))
             {
                 sent = sent.trim();
                 if (sent.length() == 0) continue;
@@ -181,17 +180,15 @@ public class TextRankSentence
             }
         }
 
-        int length = sentences.size();
-        for (int i = 0; i < length; i++)
+        List<String> new_sentences = new ArrayList<String>();
+        for (String sentence: sentences)
         {
-            String buffer = sentences.get(i);
-            if (!buffer.contains("。"))
-            {
-                buffer = buffer + "。";
-                sentences.set(i, buffer);
-            }
+            sentence = sentence + "。";
+            sentence = patch_pun_dedup(sentence);
+            sentence = patch_quote(sentence);
+            new_sentences.add(sentence);
         }
-        return sentences;
+        return new_sentences;
     }
 
      /**
@@ -271,6 +268,9 @@ public class TextRankSentence
      */
     public static String taikorGetSummary(String document, List<Term> termList, int max_length)
     {
+        if(!validate_document(document, max_length)){
+            return "";
+        }
         List<String> sentenceList = spiltSentence(document);
         List<List<String>> docs = termSpiltSentence(termList);
         int document_length = document.length();
@@ -288,7 +288,7 @@ public class TextRankSentence
 
         resultList = permutation(resultList, sentenceList);
         resultList = pick_sentences(resultList, max_length);
-        //String summary = String.join("", resultList); // incompatible with .net in Storm clusters
+
         String summary = "";
         for(String temp : resultList)
         {
@@ -306,6 +306,9 @@ public class TextRankSentence
      */
     public static String taikorGetSummary(String document, String termString, int max_length)
     {
+        if(!validate_document(document, max_length)){
+            return "";
+        }
         List<Term> termList = string2term(termString);
         List<String> sentenceList = spiltSentence(document);
         List<List<String>> docs = termSpiltSentence(termList);
@@ -342,6 +345,9 @@ public class TextRankSentence
      */
     public static String getSummary(String document, int max_length)
     {
+        if(!validate_document(document, max_length)){
+            return "";
+        }
         List<String> sentenceList = spiltSentence(document);
 
         int sentence_count = sentenceList.size();
@@ -374,14 +380,13 @@ public class TextRankSentence
 
         resultList = permutation(resultList, sentenceList);
         resultList = pick_sentences(resultList, max_length);
-        /*
-        String summary = String.join("", resultList);
-        incompatible with .net in Storm clusters
-        */
+
         String summary = "";
         for(String temp : resultList)
         {
-        	summary += patch_quote(temp);
+            temp = patch_pun_dedup(temp);
+            temp = patch_quote(temp);
+        	summary += temp;
         }
         return summary;
     }
@@ -399,6 +404,22 @@ public class TextRankSentence
 
         return sentence;
     }
+
+    public static String patch_pun_dedup(String sentence)
+    {
+        char temp_char = sentence.charAt(sentence.length() - 2);
+        String temp_str = Character.toString(temp_char);
+        String pun_collection = ",，.。";
+        if (pun_collection.contains(temp_str))
+        {
+            sentence = removeCharAt(sentence, sentence.length() - 2);
+        }
+        return sentence;
+    }
+
+    public static String removeCharAt(String s, int pos) {
+      return s.substring(0, pos) + s.substring(pos + 1);
+   }
 
     public static List<String> permutation(List<String> resultList, List<String> sentenceList)
     {
@@ -453,36 +474,57 @@ public class TextRankSentence
     }
 
     public static List<Term> string2term(String seg_str){
-        if (seg_str.charAt(0)=='[') {
-            seg_str = seg_str.substring(1, seg_str.length() - 1);
-        }
-        String[] items = seg_str.split("[ ]");
         List<Term> termList = new ArrayList<Term>();
 
-        for (int i=0; i< items.length; i++)
-        {
-            String item = items[i];
-            if (item.length()==0){
-                continue;
+            if (seg_str.charAt(0) == '[') {
+                seg_str = seg_str.substring(1, seg_str.length() - 1);
             }
-            if (item.charAt(0)=='/'){
-                continue;
+            String[] items = seg_str.split("[ ]");
+
+            for (int i = 0; i < items.length; i++) {
+                String item = items[i];
+                if (item.length() == 0) {
+                    continue;
+                }
+                if (item.charAt(0) == '/') {
+                    continue;
+                }
+                String[] temp = item.split("/");
+                String word = temp[0];
+                String nature_str = temp[1];
+                if (nature_str.charAt(nature_str.length() - 1) == ',') {
+                    nature_str = nature_str.substring(0, nature_str.length() - 1);
+                }
+                try {
+                    Nature nature = Nature.valueOf(nature_str);
+                    Term term = new Term(word, nature);
+                    termList.add(term);
+                } catch (Exception e) {
+                    System.out.println("Nature Value Illegal (Not Listed in Nature.java)");
+                }
             }
-            String[] temp = item.split("/");
-            String word = temp[0];
-            String nature_str = temp[1];
-            if (nature_str.charAt(nature_str.length()-1)==','){
-                nature_str = nature_str.substring(0, nature_str.length()-1);
-            }
-            try {
-                Nature nature = Nature.valueOf(nature_str);
-                Term term = new Term(word, nature);
-                termList.add(term);
-            }
-            catch (Exception e){
-                System.out.println("Nature Value Illegal (Not Listed in Nature.java)");
-            }
+
+        /*
+        catch (Exception e){
+            System.out.println("Indexing Error");
         }
+        */
         return termList;
+    }
+
+    public static Boolean validate_document(String document, int max_length)
+    {
+        Boolean if_validate = true;
+        if (document.length() == 0){
+            if_validate = false;
+        }
+        else if (document.length() < max_length){
+            if_validate = false;
+        }
+        else{
+            if_validate = true;
+        }
+
+        return if_validate;
     }
 }
