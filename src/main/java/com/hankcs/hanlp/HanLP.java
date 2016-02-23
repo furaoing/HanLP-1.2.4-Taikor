@@ -512,34 +512,4 @@ public class HanLP
         // The actual length of the summary generated may be short than the required length, but never longer;
         return TextRankSentence.getSummary(document, max_length);
     }
-
-    /**
-     * 自动摘要
-     * @param termList 分词结果
-     * @param max_length 需要摘要的长度
-         * @param document 文章原文
-     * @return 摘要文本
-     */
-    public static String taikorGetSummary(String document, List<Term> termList, int max_length)
-    {
-        // Parameter size in this method refers to the string length of the summary required;
-        // The actual length of the summary generated may be short than the required length, but never longer;
-        // Use segmented tokens as input
-        return TextRankSentence.taikorGetSummary(document, termList, max_length);
-    }
-
-    /**
-     * 自动摘要
-     * @param termString 分词结果字符串
-     * @param max_length 需要摘要的长度
-         * @param document 文章原文
-     * @return 摘要文本
-     */
-    public static String taikorGetSummary(String document, String termString, int max_length)
-    {
-        // Parameter size in this method refers to the string length of the summary required;
-        // The actual length of the summary generated may be short than the required length, but never longer;
-        // Use segmented tokens as input
-        return TextRankSentence.taikorGetSummary(document, termString, max_length);
-    }
 }

@@ -163,7 +163,7 @@ public class TextRankSentence
     /**
      * 将文章分割为句子
      * @param document
-     * @return
+     * @return sentences
      */
     static List<String> spiltSentence(String document)
     {
@@ -189,39 +189,6 @@ public class TextRankSentence
             new_sentences.add(sentence);
         }
         return new_sentences;
-    }
-
-     /**
-     * 将分词结果转换为为List<List<String>>
-     * @param termList 分词结果
-     * @return 文章的词语表示docs
-     */
-    static List<List<String>> termSpiltSentence(List<Term> termList)
-    {
-        List<List<String>> docs = new ArrayList<List<String>>();
-        List<String> sentences = new ArrayList<String>();
-        for (Term term : termList)
-        {
-                if (!term.word.equals("。"))
-                {
-                    if ((!term.word.equals(" "))&&
-                            (!term.word.equals("\r")) &&
-                            (!term.word.equals("\n"))&&
-                            term.word.length()>0)
-                    {
-                        if (CoreStopWordDictionary.shouldInclude(term))
-                        {
-                            sentences.add(term.word);
-                        }
-                    }
-                }
-            else {
-                    docs.add(sentences);
-                    sentences = new ArrayList<String>();
-                }
-        }
-
-        return docs;
     }
 
     /**
@@ -257,85 +224,6 @@ public class TextRankSentence
         }
         return resultList;
     }
-
-
-        /**
-     * 一句话调用接口
-     * @param termList 分词结果
-     * @param max_length 需要摘要的长度
-         * @param document 文章原文
-     * @return 摘要文本
-     */
-    public static String taikorGetSummary(String document, List<Term> termList, int max_length)
-    {
-        if(!validate_document(document, max_length)){
-            return "";
-        }
-        List<String> sentenceList = spiltSentence(document);
-        List<List<String>> docs = termSpiltSentence(termList);
-        int document_length = document.length();
-        int sentence_count = sentenceList.size();
-        int sentence_length_avg = document_length/sentence_count;
-        int size = max_length/sentence_length_avg + 1;
-
-        TextRankSentence textRank = new TextRankSentence(docs);
-        int[] topSentence = textRank.getTopSentence(size);
-        List<String> resultList = new LinkedList<String>();
-        for (int i : topSentence)
-        {
-            resultList.add(sentenceList.get(i));
-        }
-
-        resultList = permutation(resultList, sentenceList);
-        resultList = pick_sentences(resultList, max_length);
-
-        String summary = "";
-        for(String temp : resultList)
-        {
-        	summary += patch_quote(temp);
-        }
-        return summary;
-    }
-
-            /**
-     * 一句话调用接口
-     * @param termString 分词结果字符串
-     * @param max_length 需要摘要的长度
-         * @param document 文章原文
-     * @return 摘要文本
-     */
-    public static String taikorGetSummary(String document, String termString, int max_length)
-    {
-        if(!validate_document(document, max_length)){
-            return "";
-        }
-        List<Term> termList = string2term(termString);
-        List<String> sentenceList = spiltSentence(document);
-        List<List<String>> docs = termSpiltSentence(termList);
-        int document_length = document.length();
-        int sentence_count = sentenceList.size();
-        int sentence_length_avg = document_length/sentence_count;
-        int size = max_length/sentence_length_avg + 1;
-
-        TextRankSentence textRank = new TextRankSentence(docs);
-        int[] topSentence = textRank.getTopSentence(size);
-        List<String> resultList = new LinkedList<String>();
-        for (int i : topSentence)
-        {
-            resultList.add(sentenceList.get(i));
-        }
-
-        resultList = permutation(resultList, sentenceList);
-        resultList = pick_sentences(resultList, max_length);
-        //String summary = String.join("", resultList); // incompatible with .net in Storm clusters
-        String summary = "";
-        for(String temp : resultList)
-        {
-            summary += patch_quote(temp);
-        }
-        return summary;
-    }
-
 
     /**
      * 一句话调用接口
@@ -469,45 +357,6 @@ public class TextRankSentence
             }
         }
         return resultBuffer;
-    }
-
-    public static List<Term> string2term(String seg_str){
-        List<Term> termList = new ArrayList<Term>();
-
-            if (seg_str.charAt(0) == '[') {
-                seg_str = seg_str.substring(1, seg_str.length() - 1);
-            }
-            String[] items = seg_str.split("[ ]");
-
-            for (int i = 0; i < items.length; i++) {
-                String item = items[i];
-                if (item.length() == 0) {
-                    continue;
-                }
-                if (item.charAt(0) == '/') {
-                    continue;
-                }
-                String[] temp = item.split("/");
-                String word = temp[0];
-                String nature_str = temp[1];
-                if (nature_str.charAt(nature_str.length() - 1) == ',') {
-                    nature_str = nature_str.substring(0, nature_str.length() - 1);
-                }
-                try {
-                    Nature nature = Nature.valueOf(nature_str);
-                    Term term = new Term(word, nature);
-                    termList.add(term);
-                } catch (Exception e) {
-                    System.out.println("Nature Value Illegal (Not Listed in Nature.java)");
-                }
-            }
-
-        /*
-        catch (Exception e){
-            System.out.println("Indexing Error");
-        }
-        */
-        return termList;
     }
 
     public static Boolean validate_document(String document, int max_length)
