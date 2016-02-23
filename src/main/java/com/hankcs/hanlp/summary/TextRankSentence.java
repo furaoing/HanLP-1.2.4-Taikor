@@ -384,8 +384,6 @@ public class TextRankSentence
         String summary = "";
         for(String temp : resultList)
         {
-            temp = patch_pun_dedup(temp);
-            temp = patch_quote(temp);
         	summary += temp;
         }
         return summary;
