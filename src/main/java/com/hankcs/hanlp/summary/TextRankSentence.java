@@ -11,8 +11,6 @@
  */
 package com.hankcs.hanlp.summary;
 
-
-import com.hankcs.hanlp.corpus.tag.Nature;
 import com.hankcs.hanlp.dictionary.stopword.CoreStopWordDictionary;
 import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.tokenizer.StandardTokenizer;
@@ -239,9 +237,6 @@ public class TextRankSentence
         List<String> sentenceList = spiltSentence(document);
 
         int sentence_count = sentenceList.size();
-        int document_length = document.length();
-        int sentence_length_avg = document_length/sentence_count;
-        int size = max_length/sentence_length_avg + 1;
         List<List<String>> docs = new ArrayList<List<String>>();
         for (String sentence : sentenceList)
         {
@@ -259,7 +254,7 @@ public class TextRankSentence
         }
 
         TextRankSentence textRank = new TextRankSentence(docs);
-        int[] topSentence = textRank.getTopSentence(size);
+        int[] topSentence = textRank.getTopSentence(sentence_count);
         List<String> resultList = new LinkedList<String>();
         for (int i : topSentence)
         {
@@ -273,6 +268,10 @@ public class TextRankSentence
         for(String temp : resultList)
         {
         	summary += temp;
+        }
+
+        if (summary.length() < 15){
+            summary = "";
         }
         return summary;
     }
@@ -336,24 +335,22 @@ public class TextRankSentence
     public static List<String> pick_sentences(List<String> resultList, int max_length)
     {
         int length_counter = 0;
-        int length_buffer;
-        int length_jump;
+
         List<String> resultBuffer = new LinkedList<String>();
-        for(int i = 0; i < resultList.size(); i++)
+        for (String sentence: resultList)
         {
-            length_buffer = length_counter + resultList.get(i).length();
-            if (length_buffer <= max_length)
-            {
-                resultBuffer.add(resultList.get(i));
-                length_counter += resultList.get(i).length();
+            if ((max_length-length_counter) < 10){
+                break;
             }
-            else if (i < (resultList.size()-1)) {
-                length_jump = length_counter + resultList.get(i+1).length();
-                if (length_jump <= max_length) {
-                    resultBuffer.add(resultList.get(i + 1));
-                    length_counter += resultList.get(i + 1).length();
-                    i++;
-                }
+            int sentence_len = sentence.length();
+            if (sentence_len < 10){
+                continue;
+            }
+
+            if ((length_counter + sentence_len) <= max_length)
+            {
+                resultBuffer.add(sentence);
+                length_counter += sentence_len;
             }
         }
         return resultBuffer;

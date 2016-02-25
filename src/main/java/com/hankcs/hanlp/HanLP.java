@@ -25,6 +25,7 @@ import com.hankcs.hanlp.seg.common.Term;
 import com.hankcs.hanlp.summary.TextRankKeyword;
 import com.hankcs.hanlp.summary.TextRankSentence;
 import com.hankcs.hanlp.tokenizer.StandardTokenizer;
+import com.hankcs.hanlp.utility.TextUtility;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -510,6 +511,21 @@ public class HanLP
     {
         // Parameter size in this method refers to the string length of the summary required;
         // The actual length of the summary generated may be short than the required length, but never longer;
+        return TextRankSentence.getSummary(document, max_length);
+    }
+
+    /**
+     * 自动摘要
+     * @param document 目标文档
+     * @param max_length 需要摘要的长度
+     * @param max_doc_body 需要截取的文本长度
+     * @return 摘要文本
+     */
+    public static String getSummary(String document, int max_length, int max_doc_body)
+    {
+        // Parameter size in this method refers to the string length of the summary required;
+        // The actual length of the summary generated may be short than the required length, but never longer;
+        document = TextUtility.text_slice(document, max_doc_body);
         return TextRankSentence.getSummary(document, max_length);
     }
 }

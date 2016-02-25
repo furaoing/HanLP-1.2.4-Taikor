@@ -696,4 +696,14 @@ public class TextUtility
         }
         return true;
     }
+
+    public static String text_slice(String text, int requested_length)
+    {
+        if (text.length()>requested_length) {
+            return text.substring(0, requested_length);
+        }
+        else {
+            return text;
+        }
+    }
 }
