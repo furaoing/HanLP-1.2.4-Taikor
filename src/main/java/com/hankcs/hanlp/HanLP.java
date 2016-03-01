@@ -168,7 +168,6 @@ public class HanLP
 
         static
         {
-        	/*
             // 自动读取配置
             Properties p = new Properties();
             try
@@ -244,7 +243,6 @@ public class HanLP
                 sbInfo.append("现在HanLP将尝试从").append(System.getProperties().get("user.dir")).append("读取data……");
                 logger.severe("没有找到HanLP.properties，可能会导致找不到data\n" + sbInfo);
             }
-            */
         }
 
         private static boolean HadInitRootPath = false;
@@ -526,6 +524,7 @@ public class HanLP
         // Parameter size in this method refers to the string length of the summary required;
         // The actual length of the summary generated may be short than the required length, but never longer;
         document = TextUtility.text_slice(document, max_doc_body);
+        // TODO: Handle unnaturally finished sentence (missing the ending punctuation) due to text slicing
         return TextRankSentence.getSummary(document, max_length);
     }
 }
