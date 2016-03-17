@@ -27,6 +27,7 @@ public class StandardTokenizer
 {
     /**
      * 预置分词器
+     * 生成Viterbi分词器对象
      */
     public static final Segment SEGMENT = HanLP.newSegment();
 
