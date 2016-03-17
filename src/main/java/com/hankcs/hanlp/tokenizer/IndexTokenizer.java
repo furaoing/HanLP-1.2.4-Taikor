@@ -19,7 +19,7 @@ import com.hankcs.hanlp.seg.common.Term;
 import java.util.List;
 
 /**
- * 索引分词器
+ * 索引分词器 （全切分，适合生成搜索引擎索引的分词）
  * @author hankcs
  */
 public class IndexTokenizer
