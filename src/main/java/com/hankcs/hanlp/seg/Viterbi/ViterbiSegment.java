@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Viterbi分词器<br>
- * 也是最短路分词，最短路求解采用Viterbi算法
+ * 也是最优路径分词，最优路径求解采用Viterbi算法
  *
  * @author hankcs
  */
