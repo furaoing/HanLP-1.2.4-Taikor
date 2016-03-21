@@ -19,6 +19,7 @@ import com.hankcs.hanlp.collection.trie.bintrie.BinTrie;
 import com.hankcs.hanlp.corpus.io.ByteArray;
 import com.hankcs.hanlp.corpus.tag.Nature;
 import com.hankcs.hanlp.dictionary.other.CharTable;
+import com.hankcs.hanlp.utility.HttpRequest;
 import com.hankcs.hanlp.utility.Predefine;
 
 import java.io.*;
@@ -47,7 +48,7 @@ public class CustomDictionary
     static
     {
         long start = System.currentTimeMillis();
-        if (!loadMainDictionary(path[0]))
+        if (!loadMainDictionary(path[0])) // 加载自定义词典
         {
             logger.warning("自定义词典" + Arrays.toString(path) + "加载失败");
         }
@@ -436,4 +437,133 @@ public class CustomDictionary
             processor.hit(searcher.begin, searcher.begin + searcher.length, searcher.value);
         }
     }
+
+    /**
+     * 通过本地文件动态添加动态词汇 (非覆盖)
+     * @param path         动态词库本地路径
+     */
+    public static boolean addLocalDict(String path)
+    {
+        try
+        {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+            String line;
+            while ((line = br.readLine()) != null)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "");
+                add(Word, NatureWithFreq);
+            }
+            br.close();
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 通过本地文件动态添加动态词汇 (覆盖)
+     * @param path         动态词库本地路径
+     */
+    public static boolean insertLocalDict(String path)
+    {
+        try
+        {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+            String line;
+            while ((line = br.readLine()) != null)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "");
+                insert(Word, NatureWithFreq);
+            }
+            br.close();
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 通过URL文档动态添加自定义词汇(非覆盖)
+     * @param url         动态字典文档URL
+     */
+    public static boolean addURLDict(String url, String param_name, String param_value)
+    {
+        try
+        {
+            String param_str = param_name + "=" + param_value;
+            String res  = HttpRequest.sendGet(url, param_str);
+            List<String> lines = Arrays.asList(res.split("\\r?\\n"));
+            for(String line :lines)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "");
+                add(Word, NatureWithFreq);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 通过URL文档动态添加自定义词汇(覆盖)
+     * @param url         动态字典文档URL
+     */
+    public static boolean insertURLDict(String url, String param_name, String param_value)
+    {
+        try
+        {
+            String param_str = param_name + "=" + param_value;
+            String res  = HttpRequest.sendGet(url, param_str);
+            List<String> lines = Arrays.asList(res.split("\\r?\\n"));
+            for(String line :lines)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "");
+                insert(Word, NatureWithFreq);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
 }
