@@ -37,6 +37,7 @@ public class HttpRequest {
             connection.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             connection.setRequestProperty("Accept-Charset", "UTF-8");
+
             // 建立实际的连接
             connection.connect();
             // 获取所有响应头字段
@@ -47,10 +48,10 @@ public class HttpRequest {
             }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
-                    connection.getInputStream()));
+                    connection.getInputStream(), "UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
-                result += line;
+                result += line + "\n";
             }
         } catch (Exception e) {
             System.out.println("发送GET请求出现异常！" + e);
@@ -103,10 +104,10 @@ public class HttpRequest {
             out.flush();
             // 定义BufferedReader输入流来读取URL的响应
             in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
+                    new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String line;
             while ((line = in.readLine()) != null) {
-                result += line;
+                result += line + "\n";
             }
         } catch (Exception e) {
             System.out.println("发送 POST 请求出现异常！"+e);
@@ -129,4 +130,3 @@ public class HttpRequest {
         return result;
     }
 }
-
