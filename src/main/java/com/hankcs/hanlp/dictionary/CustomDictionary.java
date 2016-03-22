@@ -456,8 +456,8 @@ public class CustomDictionary
 
                 // int natureCount = (param.length - 1) / 2;
                 String Word = param[0];
-                String NatureWithFreq = line.replace(Word, "");
-                add(Word, NatureWithFreq);
+                String NatureWithFreq = line.replace(Word, "").trim();
+                Boolean result = add(Word, NatureWithFreq);
             }
             br.close();
         }
@@ -488,7 +488,7 @@ public class CustomDictionary
 
                 // int natureCount = (param.length - 1) / 2;
                 String Word = param[0];
-                String NatureWithFreq = line.replace(Word, "");
+                String NatureWithFreq = line.replace(Word, "").trim();
                 insert(Word, NatureWithFreq);
             }
             br.close();
@@ -505,6 +505,8 @@ public class CustomDictionary
     /**
      * 通过URL文档动态添加自定义词汇(非覆盖)
      * @param url         动态字典文档URL
+     *  @param param_name          文档变量
+     *  @param param_value         文档名称
      */
     public static boolean addURLDict(String url, String param_name, String param_value)
     {
@@ -521,7 +523,38 @@ public class CustomDictionary
 
                 // int natureCount = (param.length - 1) / 2;
                 String Word = param[0];
-                String NatureWithFreq = line.replace(Word, "");
+                String NatureWithFreq = line.replace(Word, "").trim();
+                add(Word, NatureWithFreq);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 通过URL文档动态添加自定义词汇(非覆盖)
+     * @param url         动态字典文档URL
+     */
+    public static boolean addURLDict(String url)
+    {
+        try
+        {
+            String res  = HttpRequest.sendGet(url, "");
+            List<String> lines = Arrays.asList(res.split("\\r?\\n"));
+            for(String line :lines)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "").trim();
                 add(Word, NatureWithFreq);
             }
         }
@@ -553,7 +586,38 @@ public class CustomDictionary
 
                 // int natureCount = (param.length - 1) / 2;
                 String Word = param[0];
-                String NatureWithFreq = line.replace(Word, "");
+                String NatureWithFreq = line.replace(Word, "").trim();
+                insert(Word, NatureWithFreq);
+            }
+        }
+        catch (Exception e)
+        {
+            logger.severe("动态词典" + path + "读取错误！" + e);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 通过URL文档动态添加自定义词汇(覆盖)
+     * @param url         动态字典文档URL
+     */
+    public static boolean insertURLDict(String url)
+    {
+        try
+        {
+            String res  = HttpRequest.sendGet(url, "");
+            List<String> lines = Arrays.asList(res.split("\\r?\\n"));
+            for(String line :lines)
+            {
+                String[] param = line.split("\\s");
+                if (param[0].length() == 0) continue;   // 排除空行
+                if (HanLP.Config.Normalization) param[0] = CharTable.convert(param[0]); // 正规化
+
+                // int natureCount = (param.length - 1) / 2;
+                String Word = param[0];
+                String NatureWithFreq = line.replace(Word, "").trim();
                 insert(Word, NatureWithFreq);
             }
         }
