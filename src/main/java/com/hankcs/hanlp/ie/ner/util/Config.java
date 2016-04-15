@@ -9,9 +9,11 @@ import java.util.Set;
 
 public class Config {
     public Set<String> orgTagging;
+    public Set<String> personTagging;
 
     public Config(){
         orgTagging = loadOrganizationTagging();
+        personTagging = loadPersonNameTagging();
     }
 
     private Set<String> loadOrganizationTagging() {
@@ -24,6 +26,12 @@ public class Config {
         nature.add("ntcb");
         nature.add("ntcf");
         nature.add("ntch");
+        return nature;
+    }
+
+    private Set<String> loadPersonNameTagging() {
+        Set<String> nature = new HashSet<String>();
+        nature.add("nr");
         return nature;
     }
 }
