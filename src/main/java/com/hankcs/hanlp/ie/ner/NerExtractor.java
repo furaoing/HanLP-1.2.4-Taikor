@@ -1,7 +1,5 @@
 package com.hankcs.hanlp.ie.ner;
 
-import com.hankcs.hanlp.HanLP;
-import com.hankcs.hanlp.ie.ner.util.Config;
 import com.hankcs.hanlp.seg.Segment;
 import com.hankcs.hanlp.seg.common.Term;
 
@@ -17,15 +15,7 @@ public class NerExtractor {
 
     protected static Segment SegEngine;
 
-    protected static List<String> extractOrg(String text) {
-        return extract(text, new Config().orgTagging);
-    }
-
-    protected static List<String> extractPerson(String text) {
-        return extract(text, new Config().personTagging);
-    }
-
-    protected static List<String> extract(String text, Set<String> tagging) {
+    protected static List<String> extract(Set<String> tagging, String text) {
         List<String> ne = new LinkedList<String>();
 
         com.hankcs.hanlp.seg.Segment segment = SegEngine.enableOrganizationRecognize(true)
