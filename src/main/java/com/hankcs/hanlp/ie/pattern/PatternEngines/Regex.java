@@ -18,10 +18,14 @@ public class Regex extends PatternEngine {
 
         // Now create matcher object.
         Matcher m = r.matcher(text);
-        if (m.find()) {
-            result.add(m.group(1));
-            System.out.println("Found value: " + m.group(0));
-            System.out.println("Found value: " + m.group(1));
+        if (m.find() && (m.groupCount() > 0)) {
+            // m.find will return true if a sub-sequence matched is found
+            // m.groupCount will return the count of all sub-patterns
+            for(int i = 1; i < m.groupCount()+1; i++) {
+                // m.group(0) will return the entire pattern matched
+                result.add(m.group(i));
+                System.out.println("Found value: " + m.group(i));
+            }
         } else {
             System.out.println("NO MATCH");
         }
