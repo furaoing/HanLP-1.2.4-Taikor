@@ -10,5 +10,5 @@ import java.util.regex.Pattern;
  */
 
 public abstract class PatternEngine {
-    protected abstract List<String> match(String pattern, String text);
+    protected abstract List<List<String>> match(String pattern, String text);
 }

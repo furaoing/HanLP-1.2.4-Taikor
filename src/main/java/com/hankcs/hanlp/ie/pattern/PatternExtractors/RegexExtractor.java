@@ -9,7 +9,7 @@ import java.util.List;
  * Created by rao on 16-4-16.
  */
 public class RegexExtractor extends PatternExtractor {
-    public static List<String> regexExtract(String pattern, String text) {
+    public static List<List<String>> regexExtract(String pattern, String text) {
         engine = new Regex();
         return extract(pattern, text);
     }

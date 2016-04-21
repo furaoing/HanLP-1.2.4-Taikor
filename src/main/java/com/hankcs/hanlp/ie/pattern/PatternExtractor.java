@@ -10,9 +10,8 @@ import java.util.List;
 public class PatternExtractor {
     protected static PatternEngine engine;
 
-    protected static List<String> extract(String pattern, String text){
-        List<String> result = new LinkedList<String>();
-        result = engine.match(pattern, text);
+    protected static List<List<String>> extract(String pattern, String text){
+        List<List<String>> result = engine.match(pattern, text);
         return result;
     }
 }
