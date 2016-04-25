@@ -9,9 +9,9 @@ import java.util.List;
  */
 public class RegexExtractTest {
     public static void main(String[] p) {
-        String text = "这意味着，胡锦涛的注册资本将得到极大提升。此前，经过几轮注资，天安财险的注册资本已经达到了69.81亿元，而在此次增资之后，天安财险的注册资本将超过百亿元。借此，西水股份所持天安财险的股权比例也从16.18%上升至36.3%。 ";
-        String pattern = "胡锦涛(.+?)极大提升";
-        //List<String> t = RegexExtractor.regexExtract(pattern, text);
-        //System.out.println(t);
+        String text = "日前，国家税务总局发布《关于全面推开营业税改征增值税试点有关税收征收管理事项的公告》（以下简称《公告》）、《进一步做好营改增一次性业务办理纳税服务工作的通知》和《关于进一步做好营改增税控装置安装服务和监督管理工作有关问题的通知》，对全面推开营改增试点有关税收征管事项进行了细化明确。";
+        String pattern = "，(.+?)发布";
+        List<List<String>> t = RegexExtractor.regexExtract(pattern, text);
+        System.out.println(t);
     }
 }
