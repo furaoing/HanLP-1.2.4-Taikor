@@ -4,102 +4,110 @@ import java.util.ArrayList;
 
 public class DocumentTemplate {
 	
+  /**
+   * 由若干个ParagraphTemplate通过list组装成一个document
+   */
 	ArrayList<ParagraphTemplate> document;
+	/**document的标题title*/
+	String documentTitle;
+	/**document的作者名*/
+	String authorName;
 	
-	
-	//******************************     initial     **********************************
-	
-	public DocumentTemplate()
-	{
+	/**
+	 * 默认初始化值：
+	 *   this.document=new ArrayList<ParagraphTemplate>();
+        String documentTitle="";
+        String authorName="";
+	 */
+	public DocumentTemplate()	{
 		this.document=new ArrayList<ParagraphTemplate>();
-
+		this.documentTitle="";
+		this.authorName="";
 	}
 	
-	//*************************             Functions    *****************************
-	
-	public void  addParagraph(ParagraphTemplate pt)
-	{
+/**
+ * 新增ParagraphTemplate到document末尾
+ * @param pt  新增的ParagraphTemplate
+ */
+	public void  addParagraph(ParagraphTemplate pt) 	{
 		this.document.add(pt);
 	}
 	
-	public void deleteParagraph(int index)
-	{
-		this.document.remove(index);
+	/**
+	 * 新增ParagraphTemplate到document中的某个位置，方法同java.Arraylist.add
+	 * @param i 增加的位置
+	 * @param pt  新增的ParagraphTemplate
+	 */
+	    public void  addParagraph(int i, ParagraphTemplate pt)     {
+	        this.document.add(i, pt);
+	    }    
+	
+	/**
+     * 移除索引位置 i 上的ParagraphTemplate
+     * @param i 待移除ParagraphTemplate的索引位置
+	 */
+	public void removeParagraph(int i) 	{
+		this.document.remove(i);
 	}
 	
-	public void printDocumentTemplate()
-	{
-		System.out.println("该文件包含段落数："+this.document.size());
-		for(int i=0;i<this.document.size();i++)
-		{
-			System.out.println("第"+(i+1)+"个段落信息：*************start");
+	   /**
+     * 移除索引位置 i 上的ParagraphTemplate
+     * @param pt  待移除ParagraphTemplate
+     */
+    public void removeParagraph(ParagraphTemplate pt)  {
+        this.document.remove(pt);
+    }
+    
+    /**
+     * 清空document中的paragraph列表
+        同时作者名也documenttitle也清空
+     */
+    public void clearParagraph() {
+      this.document.clear();
+      this.authorName = "" ;
+      this.documentTitle = "" ;
+    }
+     
+	/**
+	 * 修改作者名
+	 * @param s 修改后的作者名
+	 */
+	public void changeAuthorname(String s)	{
+		this.authorName=s;
+	}
+	
+	/**
+	 * 修改document标题名
+	 * @param s 修改后的document标题
+	 */
+	public void changeDocumentTitle(String s)	{
+		this.documentTitle=s;
+	}
+	
+	/**
+	 * print all the information of a dt
+	 */
+	public void printDocumentTemplate()	{	
+		System.out.println("文章标题："+this.documentTitle);
+		System.out.println("作者："+this.authorName);
+		System.out.println("该文件包含ParagraphTemplate数："+this.document.size());
+		for(int i=0;i<this.document.size();i++)		{
+			System.out.println("*************第"+(i+1)+"个ParagraphTemplate*************");
 			this.document.get(i).printParagraphTemplate();
-			System.out.println("第"+(i+1)+"个段落信息：*************end");
-		}
+			System.out.println("********************************************");
+		}//for	
 	}
 	
-	public void printDocumentText()
-	{
-		for(ParagraphTemplate pt:this.document)
-		{
+	/**
+	 * only print the document text
+	 */
+	public void printDocumentText() 	{
+		System.out.println("《"+this.documentTitle+"》");
+		System.out.println("作者/"+this.authorName);
+		for(ParagraphTemplate pt:this.document)		{
 			pt.printParagraphText();
 			System.out.println();
-		}
-		
+		}//for 		
 	}
 	
-	 //*************************             small test in main   *****************************
-	 
-	 public static  void main(String[] args)
-	 {
-		 
-        LongSentenceTemplate lst1=new LongSentenceTemplate();
-		 
-		 SentenceTemplate st1 =new SentenceTemplate();
-		 st1.String_static="等板块";
-		 st1.addAlternative("券商");
-		 st1.addAlternative("银行");
-		 st1.changestaticfirstflag(false);//动态文本在先
-		 
-		 SentenceTemplate st2 =new SentenceTemplate();
-		// st2.changeStringStatic("");
-		 st2.addAlternative("领涨");
-		 st2.addAlternative("领跌");
-		 st2.changePunctuation(",");
-		 			 
-		 lst1.addSentence(st1);
-		 lst1.addSentence(st2);
-		 
-		 
-        LongSentenceTemplate lst2=new LongSentenceTemplate();
-		 
-		 SentenceTemplate st3 =new SentenceTemplate();
-		 st3.String_static="成交量有所";
-		 st3.addAlternative("放大");
-		 st3.addAlternative("缩小");
-		st3.changePunctuation(".");
-				 			 
-		 lst2.addSentence(st3);
-		 
-		 ParagraphTemplate pt1=new ParagraphTemplate();
-		 pt1.paragraph.add(lst1);
-		 pt1.paragraph.add(lst2);
-		 
-		 ParagraphTemplate pt2=new ParagraphTemplate();
-		 pt2.paragraph.add(lst2);
-		 pt2.paragraph.add(lst1);
-		 
-		 DocumentTemplate dt=new DocumentTemplate();
-		 dt.addParagraph(pt1);
-		 dt.addParagraph(pt2);
-		  
-		 
-		 dt.printDocumentTemplate();
-		 dt.printDocumentText();
-		 
-		 
-		 
-	 }
-	
-
 }

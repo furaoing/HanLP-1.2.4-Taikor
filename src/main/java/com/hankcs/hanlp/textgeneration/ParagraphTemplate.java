@@ -1,100 +1,97 @@
-/*
- * 测试句子：
- * 早盘沪深指数_______(快速杀跌，快速上涨，小幅震荡，大幅高开，大幅震荡字段)，_______(券商、银行等板块字段)等板块_______(领跌,领跌：二选一)，_______(券商、银行等板块字段)等板块_______(领跌,领跌：二选一)，沪指报收­­­­_______(指数值)点，深指报收­­­­_______(指数值)点。两市半日成交_______(成交量值)亿元，成交量有所________(放大,缩小：二选一)
- */
-
-
 package com.hankcs.hanlp.textgeneration;
 
 import java.util.ArrayList;
 
 public class ParagraphTemplate {
 	
-	
-	ArrayList<LongSentenceTemplate> paragraph;
-	int documentposition;
-	
-	
-	
-	//******************************     initial     **********************************
-	public ParagraphTemplate()
-	{
-		this.paragraph=new ArrayList<LongSentenceTemplate>();
-		this.documentposition=-1;
-		
-	}
-	
-	//*************************             Functions    *****************************
+  /**
+   * 由若干个SentenceTemplate通过list组装成一个paragraph
+   */
+	ArrayList<SentenceTemplate> paragraph;
+	/**
+     * 本条template在Document中的位置,  -1=不出现
+     */
+	int documentPosition;
 
-	public void addLongSentence(LongSentenceTemplate lst)
-	{
-		this.paragraph.add(lst);
+	/**
+	 *  默认初始赋值：
+	 *  this.paragraph=new ArrayList<SentenceTemplate>();
+         this.documentPosition=-1;
+	 */
+	public ParagraphTemplate()	{
+		this.paragraph=new ArrayList<SentenceTemplate>();
+		this.documentPosition=-1;	
 	}
 	
-	public void deleteLongsentence(int index)
-	{
-		this.paragraph.remove(index);
+/**
+ * 新增SentenceTemplate到paragraph末尾
+ * @param st  新增的SentenceTemplate
+ */
+	public void addSentenceTemplate(SentenceTemplate st)	{
+		this.paragraph.add(st);
 	}
 	
-	public void printParagraphTemplate()
-	{
-		System.out.println("该段落包含长句子数："+this.paragraph.size());
-		for(int i=0;i<this.paragraph.size();i++)
-		{
-			System.out.println("第"+(i+1)+"个长句子信息：*************start");
-			this.paragraph.get(i).printLongSentenceTemplate();
-			System.out.println("第"+(i+1)+"个长句子信息：*************end");
-		}
+/**
+ * 新增SentenceTemplate到paragraph中的某个位置，方法同java.Arraylist.add
+ * @param i  增加的位置
+ * @param st  新增的SentenceTemplate
+ */
+    public void addSentenceTemplate(int i, SentenceTemplate st)    {
+        this.paragraph.add(i, st);
+    }
+	
+	/**
+	 * 移除索引位置 i 上的SentenceTemplate
+	 * @param i 待移除SentenceTemplate的索引位置
+	 */
+	public void removeSentenceTemplate(int i)	{
+		this.paragraph.remove(i);
 	}
 	
-public void printParagraphText()
-{
-	for(LongSentenceTemplate lst:this.paragraph)
-	{
-		lst.printLongSentenceText();
-	}
-}
 	
-	 //*************************             small test in main   *****************************
-	 
-	 public static  void main(String[] args)
-	 {
-		 
-         LongSentenceTemplate lst1=new LongSentenceTemplate();
-		 
-		 SentenceTemplate st1 =new SentenceTemplate();
-		 st1.String_static="等板块";
-		 st1.addAlternative("券商");
-		 st1.addAlternative("银行");
-		 st1.changestaticfirstflag(false);//动态文本在先
-		 
-		 SentenceTemplate st2 =new SentenceTemplate();
-		// st2.changeStringStatic("");
-		 st2.addAlternative("领涨");
-		 st2.addAlternative("领跌");
-		 st2.changePunctuation(",");
-		 			 
-		 lst1.addSentence(st1);
-		 lst1.addSentence(st2);
-		 
-		 
-         LongSentenceTemplate lst2=new LongSentenceTemplate();
-		 
-		 SentenceTemplate st3 =new SentenceTemplate();
-		 st3.String_static="成交量有所";
-		 st3.addAlternative("放大");
-		 st3.addAlternative("缩小");
-		st3.changePunctuation(".");
-				 			 
-		 lst2.addSentence(st3);
-		 
-		 ParagraphTemplate pt=new ParagraphTemplate();
-		 pt.paragraph.add(lst1);
-		 pt.paragraph.add(lst2);
-		 
-		 pt.printParagraphTemplate();
-		 pt.printParagraphText();
+    public void removeSentenceTemplate(SentenceTemplate st)   {
+      if(this.paragraph.contains(st)){
+        this.paragraph.remove(st);
+      }else{
+        // System.out.print("不存在，删除失败");
+      }//if else
+  }
 
-		 
-	 }
+    /**
+     * 清空paragraph中的sentence列表（同时documentPosition重置为-1）
+     */
+    public void clearParagraph() {
+      this.paragraph.clear();
+      this.documentPosition = -1 ;
+    }
+	
+    /**
+     * 修改在document中的位置
+     * @param i 修改后的documentPosition
+     */
+    public void changeDocumentPosition(int i)   {
+        this.documentPosition=i;
+    }
+	
+	/**
+	 * print all the information of a ParagraphTemplate
+	 */
+	public void printParagraphTemplate() 	{
+		System.out.println("该ParagraphTemplate包含SentenceTemplate数："+this.paragraph.size());
+		for(int i=0;i<this.paragraph.size();i++)  {
+			System.out.println("************第"+(i+1)+"个SentenceTemplate信息*************");
+			this.paragraph.get(i).printSentenceTemplate();
+			System.out.println("***************************************");
+		}//for
+	}
+	
+	/**
+	 * only print the paragraph text
+	 */
+  public void printParagraphText() {
+	for(SentenceTemplate st : this.paragraph) 	{
+		st.printSentenceText();
+	}//for
+  }
+
 }
