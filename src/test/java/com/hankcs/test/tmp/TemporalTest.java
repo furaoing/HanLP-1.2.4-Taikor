@@ -1,4 +1,4 @@
-package tmp;
+package com.hankcs.test.tmp;
 
 import com.hankcs.hanlp.ie.temporal.TemporalExtractor;
 import com.hankcs.hanlp.ie.temporal.TimeExtracted;

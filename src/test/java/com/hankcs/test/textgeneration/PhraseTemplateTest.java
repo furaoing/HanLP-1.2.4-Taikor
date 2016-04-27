@@ -1,5 +1,6 @@
-import com.hankcs.hanlp.textgeneration.PhraseTemplate;
+package com.hankcs.test.textgeneration;
 
+import com.hankcs.hanlp.textgeneration.PhraseTemplate;
 
 public class PhraseTemplateTest  {
   

@@ -1,4 +1,4 @@
-package hankcs.test.tmp;
+package com.hankcs.test.tmp;
 
 import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.seg.common.Term;

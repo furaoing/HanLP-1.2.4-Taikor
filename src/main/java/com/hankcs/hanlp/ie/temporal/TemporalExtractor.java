@@ -8,6 +8,7 @@ import java.util.*;
 /**
  * Created by roy on 2016/4/19.
  */
+
 public class TemporalExtractor {
     public static List<TimeExtracted> extract(String text){
         String propertyFileName = "regex.properties";
@@ -31,7 +32,6 @@ public class TemporalExtractor {
 
             timeE.add(t);
         }
-
         return timeE;
     }
 }

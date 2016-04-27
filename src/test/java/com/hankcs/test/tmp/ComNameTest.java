@@ -1,4 +1,4 @@
-package hankcs.test.tmp;
+package com.hankcs.test.tmp;
 
 import java.util.List;
 

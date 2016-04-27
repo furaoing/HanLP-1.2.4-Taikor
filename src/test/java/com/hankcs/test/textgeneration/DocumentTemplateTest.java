@@ -1,3 +1,5 @@
+package com.hankcs.test.textgeneration;
+
 import com.hankcs.hanlp.textgeneration.DocumentTemplate;
 import com.hankcs.hanlp.textgeneration.ParagraphTemplate;
 import com.hankcs.hanlp.textgeneration.PhraseTemplate;
