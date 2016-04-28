@@ -53,7 +53,7 @@
                 <version>${maven-jar-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*.properties</exclude>
+                        <exclude>hanlp.properties</exclude>
                     </excludes>
                 </configuration>
             </plugin>
